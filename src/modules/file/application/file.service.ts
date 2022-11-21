@@ -40,7 +40,9 @@ export class FileService {
     }
   }
 
-  public getFolderSize({ subPath = 'b' }: GetFolderSizeParameters) {
-    return this.awsService.getFolderSize({ subPath });
+  public async getFolderSize({ subPath = 'b' }: GetFolderSizeParameters) {
+    const size = await this.awsService.getFolderSize({ subPath });
+
+    return { folder: subPath, size };
   }
 }

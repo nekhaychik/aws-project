@@ -1,8 +1,9 @@
-import { Controller, Delete, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 import { FileService } from '../application';
-import { DeleteFileInput } from './inputs';
+import { FileDto, FolderSizeDto } from './dtos';
+import { DeleteFileInput, GetFolderSizeInput } from './inputs';
 
 @Controller('/file')
 export class FileController {
@@ -10,18 +11,17 @@ export class FileController {
 
   @Post('/add-file')
   @UseInterceptors(FileInterceptor('file'))
-  public async addFile(@UploadedFile() file: Express.Multer.File) {
-    const data = await this.fileService.addFile({ file });
-    return { data };
+  public async addFile(@UploadedFile() file: Express.Multer.File): Promise<FileDto> {
+    return this.fileService.addFile({ file });
   }
 
   @Delete(':subPath/:name')
-  public deleteFile(@Param() { subPath, name }: DeleteFileInput) {
+  public deleteFile(@Param() { subPath, name }: DeleteFileInput): Promise<{ data: boolean }> {
     return this.fileService.deleteFile({ key: subPath + '/' + name });
   }
 
-  @Get(':folder')
-  public getFolderSize(@Param() { folder }) {
-    return this.fileService.getFolderSize({ subPath: folder });
+  @Get('/get-folder-size')
+  public getFolderSize(@Query() query: GetFolderSizeInput): Promise<FolderSizeDto> {
+    return this.fileService.getFolderSize({ subPath: query.folder });
   }
 }
