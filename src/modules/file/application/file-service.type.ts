@@ -5,3 +5,7 @@ export interface AddFileParameters {
 export interface DeleteFileParameters {
   key: string;
 }
+
+export interface GetFolderSizeParameters {
+  subPath?: string;
+}

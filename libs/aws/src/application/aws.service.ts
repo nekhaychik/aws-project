@@ -1,9 +1,14 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, ListObjectsCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-
 import { AwsModuleOptions, AWS_MODULE_OPTIONS_TOKEN, FileData } from '../core';
-import { DeleteFileParameters, GetKeyParameters, GetSignedUrlParameters, PutFileParameters } from './aws-service.type';
+import {
+  DeleteFileParameters,
+  GetFolderSizeParameters,
+  GetKeyParameters,
+  GetSignedUrlParameters,
+  PutFileParameters,
+} from './aws-service.type';
 
 @Injectable()
 export class AwsService {
@@ -65,5 +70,20 @@ export class AwsService {
     });
 
     await this.s3Client.send(command);
+  }
+
+  public async getFolderSize({ subPath = 'b' }: GetFolderSizeParameters) {
+    const command = new ListObjectsCommand({
+      Bucket: this.bucket,
+      Prefix: `${subPath}/`,
+    });
+
+    const list = await this.s3Client.send(command);
+
+    const size = list.Contents.reduce((acc, file) => {
+      return acc + file.Size;
+    }, 0);
+
+    return size;
   }
 }

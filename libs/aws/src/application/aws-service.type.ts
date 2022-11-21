@@ -19,3 +19,7 @@ export interface PutFileParameters {
 export interface DeleteFileParameters {
   key: string;
 }
+
+export interface GetFolderSizeParameters {
+  subPath?: string;
+}

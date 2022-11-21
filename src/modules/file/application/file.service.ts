@@ -4,7 +4,7 @@ import { v4 } from 'uuid';
 import { AwsService } from 'libs/aws';
 
 import { FileDomain } from '../domain';
-import { AddFileParameters, DeleteFileParameters } from './file-service.type';
+import { AddFileParameters, DeleteFileParameters, GetFolderSizeParameters } from './file-service.type';
 
 @Injectable()
 export class FileService {
@@ -38,5 +38,9 @@ export class FileService {
     } catch (err) {
       throw new BadRequestException(err.message);
     }
+  }
+
+  public getFolderSize({ subPath = 'b' }: GetFolderSizeParameters) {
+    return this.awsService.getFolderSize({ subPath });
   }
 }
